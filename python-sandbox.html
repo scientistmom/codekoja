@@ -1,0 +1,40 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-xAd39vukrEJTSOrja79yLftHuxJHZ+U4DXWGi7fAMXg=' blob: 'wasm-unsafe-eval'; worker-src blob:; connect-src 'none'; base-uri 'none'; form-action 'none'">
+<script>
+"use strict";
+// This document must be embedded with sandbox="allow-scripts", never same-origin.
+// No page storage, network, forms, popups or parent DOM access is granted.
+addEventListener("message", function initialize(event) {
+  if (globalThis.origin !== "null" || parent === self || event.origin !== new URL(location.href).origin ||
+      event.source !== parent || event.data?.type !== "initialize" || !event.ports[0]) return;
+  removeEventListener("message", initialize);
+  const port = event.ports[0];
+  let worker, ready = false, running = false, finished = false;
+  const fail = () => {
+    if (finished) return;
+    finished = true; worker?.terminate(); port.postMessage({ type: "status", state: "error" });
+  };
+  try {
+    const url = URL.createObjectURL(new Blob([event.data.source], { type: "text/javascript" }));
+    // A classic worker can dynamically import the unmodified ES-module runtime.
+    // Its Blob URL inherits this document's restrictive CSP and opaque origin.
+    worker = new Worker(url);
+    worker.onerror = fail; worker.onmessageerror = fail;
+    worker.onmessage = ({ data }) => {
+      if (finished) return;
+      if (data?.type === "status" && data.state === "loading" && !ready && !running) return;
+      if (data?.type === "status" && data.state === "ready" && !ready && !running) {
+        ready = true; port.postMessage(data);
+      } else if (data?.type === "result" && running) {
+        finished = true; worker.terminate(); port.postMessage(data);
+      } else fail();
+    };
+    port.onmessage = ({ data }) => {
+      if (!ready || running || finished || data?.type !== "run") { fail(); return; }
+      running = true; worker.postMessage(data);
+    };
+    worker.postMessage({ type: "initialize", assets: event.data.assets, locale: event.data.locale });
+  } catch { fail(); }
+});
+</script>

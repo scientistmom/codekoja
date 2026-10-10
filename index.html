@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en" class="course-map-loading">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/monaco-editor@0.57.0/min/vs/ blob: 'sha256-2c6ZK02qynq8Q+i+RVExv8LXzv0/EU+4HMhP6Fzcl2s='; style-src 'self' https://cdn.jsdelivr.net/npm/monaco-editor@0.57.0/min/vs/ 'unsafe-inline'; font-src 'self' https://cdn.jsdelivr.net/npm/monaco-editor@0.57.0/min/vs/ data:; img-src 'self' data: blob:; connect-src 'self' https://cdn.jsdelivr.net/npm/monaco-editor@0.57.0/min/vs/ https://cdn.jsdelivr.net/pyodide/v314.0.6/full/; worker-src blob:; frame-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CodeKoja</title>
+  <script>
+    window.PipWelcomePending = true;
+    window.PipReleaseWelcome = () => {
+      window.PipWelcomePending = false;
+      document.documentElement.classList.remove("course-map-loading");
+      document.querySelector("#course-map-loading-screen")?.remove();
+      window.PipTutorial?.map?.welcomeReady?.();
+    };
+  </script>
+  <link rel="stylesheet" href="assets/game.css?v=cleanup-3">
+</head>
+<body>
+  <div id="course-map-loading-screen" role="status"><span aria-hidden="true">{ }</span>CodeKoja</div>
+  <div class="app-shell" data-ui-mode="write">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">{ }</span>
+        <div class="brand-copy">
+          <strong>CodeKoja</strong>
+          <h1 id="mission-title"></h1>
+        </div>
+      </div>
+
+      <div class="runtime-pill" id="runtime-pill" data-state="loading" role="status">
+        <span class="runtime-dot" aria-hidden="true"></span>
+        <span id="runtime-label"></span>
+      </div>
+    </header>
+
+    <div class="campaign-slot">
+    <nav class="campaign-nav" id="campaign-nav" data-write-only></nav>
+      <div class="read-difficulty-picker" data-read-mode-only>
+                <div class="difficulty-options read-difficulty-options" id="read-difficulty" role="group">
+                  <button class="difficulty-option" type="button" data-difficulty="actions" aria-pressed="true"><span class="difficulty-number" aria-hidden="true">1</span><span class="difficulty-name" aria-hidden="true">Commands</span></button>
+                  <button class="difficulty-option" type="button" data-difficulty="for" aria-pressed="false"><span class="difficulty-number" aria-hidden="true">2</span><span class="difficulty-name" aria-hidden="true">For</span></button>
+                  <button class="difficulty-option" type="button" data-difficulty="if" aria-pressed="false"><span class="difficulty-number" aria-hidden="true">3</span><span class="difficulty-name" aria-hidden="true">If</span></button>
+                  <button class="difficulty-option" type="button" data-difficulty="while" aria-pressed="false"><span class="difficulty-number" aria-hidden="true">4</span><span class="difficulty-name" aria-hidden="true">While</span></button>
+                  <button class="difficulty-option" type="button" data-difficulty="mixed" aria-pressed="false"><span class="difficulty-number" aria-hidden="true">5</span><span class="difficulty-name" aria-hidden="true">Mixed</span></button>
+                </div>
+              </div>
+    </div>
+
+    <main>
+      <section class="workspace practice-workspace">
+        <article class="editor-panel">
+          <div class="panel-head">
+            <div>
+              <span class="file-dot" aria-hidden="true"></span>
+              <strong id="file-name">main.py</strong>
+            </div>
+            <div class="panel-head-tools">
+              <span class="freedom-badge" id="editor-mode-badge"></span>
+              <div class="mode-switch" role="group">
+                <button id="tutorial-mode" type="button" aria-pressed="false" disabled></button>
+                <button id="read-mode" type="button" aria-pressed="false">Read code</button>
+                <button id="write-mode" type="button" aria-pressed="true">Write code</button>
+              </div>
+            </div>
+          </div>
+
+          <section class="code-tools" id="code-tools" aria-labelledby="code-tools-title">
+            <details id="code-tools-disclosure">
+              <summary><strong id="code-tools-title"></strong></summary>
+              <div class="code-tools-panel">
+                <div class="code-tool-list" id="code-tool-list" role="toolbar"></div>
+              </div>
+            </details>
+          </section>
+
+          <div class="editor-wrap" id="editor-wrap">
+            <div id="monaco-editor" aria-hidden="true"></div>
+            <textarea id="code-editor" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
+          </div>
+
+
+          <section class="console-panel" id="console-panel" data-state="idle" aria-labelledby="console-title">
+            <header class="console-head">
+              <div class="terminal-heading">
+                <span class="terminal-lights" aria-hidden="true"><i></i><i></i><i></i></span>
+                <span>
+                  <strong id="console-title">Python console</strong>
+                </span>
+              </div>
+              <span class="console-count" id="console-count"></span>
+            </header>
+            <pre id="console-output" role="log" aria-live="polite" aria-atomic="false" aria-relevant="additions" tabindex="0"></pre>
+          </section>
+
+        </article>
+
+        <aside class="world-panel">
+          <div class="world-head">
+            <div>
+              <p class="panel-eyebrow" id="world-eyebrow"></p>
+              <h2 id="world-title"></h2>
+            </div>
+          </div>
+          <div class="board-stage">
+            <div class="board" id="board" role="img"></div>
+          </div>
+
+          <div class="world-lower">
+          <section class="trace-panel" id="trace-panel" data-read-mode-only tabindex="0">
+            <div class="trace-head">
+              <output id="trace-count"></output>
+            </div>
+            <ol class="trace-route" id="trace-route">
+              
+            </ol>
+            <div class="trace-controls" role="group">
+              <button class="trace-key" type="button" data-trace-action="left" aria-keyshortcuts="ArrowLeft" disabled><span aria-hidden="true">&larr;</span><code>left()</code></button>
+              <button class="trace-key" type="button" data-trace-action="forward" aria-keyshortcuts="ArrowUp" disabled><span aria-hidden="true">&uarr;</span><code>forward()</code></button>
+              <button class="trace-key" type="button" data-trace-action="right" aria-keyshortcuts="ArrowRight" disabled><span aria-hidden="true">&rarr;</span><code>right()</code></button>
+            </div>
+            <p class="trace-feedback" id="trace-feedback" role="status" aria-live="polite" aria-atomic="true"></p>
+          </section>
+
+          <div class="result-summary" id="result-summary">
+            <span class="summary-icon" id="summary-icon" aria-hidden="true"></span>
+            <div>
+              <strong id="summary-title"></strong>
+              <p id="summary-copy"></p>
+            </div>
+          </div>
+
+          </div>
+        </aside>
+        <div class="play-controls" id="practice-controls">
+            <div class="world-tools">
+              <button class="new-board-button reset-board-button" id="reset-board" type="button">
+                <span aria-hidden="true">&#8676;</span>
+                <span class="button-label"></span>
+              </button>
+              <button class="new-board-button" id="new-board" type="button">
+                <span aria-hidden="true">&#9856;</span>
+                <span class="button-label"></span>
+              </button>
+              <button class="icon-button" id="replay-button" type="button" data-write-only disabled>&#8635;</button>
+            </div>
+            <div class="trace-actions" data-read-mode-only>
+              <button class="button ghost" id="trace-undo" type="button" disabled>Undo last</button>
+              <button class="button ghost" id="trace-clear" type="button" disabled>Clear route</button>
+              <button class="button primary" id="trace-evaluate" aria-keyshortcuts="Enter" type="button" disabled>Evaluate route</button>
+            </div>
+          <div class="editor-foot">
+            <div class="editor-actions">
+              <button class="button ghost" id="reset-code" type="button"></button>
+              <button class="button ghost" id="stop-code" type="button" hidden>Stop</button>
+              <button class="button primary" id="run-code" type="button" disabled>
+
+              </button>
+              <button class="button success" id="next-mission" type="button" data-write-only hidden></button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <noscript>This game needs JavaScript. · A játékhoz JavaScript szükséges.</noscript>
+  <script src="language.js?v=136"></script>
+</body>
+</html>
